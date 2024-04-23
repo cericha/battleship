@@ -10,7 +10,8 @@ class Grid:
     def __init__(self, rows: int = 10, cols: int = 10):
        self.rows = rows
        self.cols = cols
-       self.map = [[self.SPACE["empty"] for x in rows] for y in cols]
+       self.map = [[self.SPACE["empty"] for x in range(rows)] for y in range(cols)]
+    
 
     def clone(self):
         gridCopy = Grid(self.rows, self.cols)

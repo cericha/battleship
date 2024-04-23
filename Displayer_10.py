@@ -19,17 +19,17 @@ class Displayer():
             for j in range(10):
                 v = i // 3
 
-                if grid[v][j] == "-":
+                if grid.map[v][j] == "-":
                     color = Fore.LIGHTBLACK_EX
-                elif grid[v][j] == "O":
+                elif grid.map[v][j] == "O":
                     color = Fore.WHITE
-                elif grid[v][j] == "X":
+                elif grid.map[v][j] == "X":
                     color = Fore.RED
                 else:
                     color = Fore.WHITE
 
                 if i % 3 == 1:
-                    string = str(grid[v][j]).center(7, " ")
+                    string = str(grid.map[v][j]).center(7, " ")
                 else:
                     string = " "
 

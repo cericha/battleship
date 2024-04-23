@@ -31,15 +31,13 @@ class Direction(Enum):
     HORIZONTAL = 2
 
 
-
-
 class GameManager:
 
     def __init__(self, ships, rows = 10, cols = 10, playerAI=None, displayer=None, timeLimit=-1):
         self.rows = rows
         self.cols = 10
         self.grid = Grid(rows, cols)
-        self.enemy_board = self.generate_random_board(self.grid) # This makes self.fleet
+        self.enemy_board = self.generate_random_board() # This makes self.fleet
         self.total_hits = 0 # With standard ships, ned 
         self.needed_hits = sum([ship.size for ship in ships])
         self.over = False
@@ -61,17 +59,19 @@ class GameManager:
         # """ Main method that handles running the game of 2048 """
         
         # # Initialize the game
-        self.place_random_ships(self.grid)
+        self.enemy_board = Grid()
+        self.place_random_ships(self.enemy_board)
         self.displayer.display(self.grid)
         while self.total_hits < 17 and not self.over:
             self.prevTime = time.process_time()
             gridCopy = self.grid.clone() # To ensure AI cant steal this?
             
-            x, y = self.player.getMove(gridCopy) # Player board should be not original board... good call
+            x, y = self.playerAI.getMove(gridCopy) # Player board should be not original board... good call
             
             self.move(x, y)
             # Comment out displayer when you need speed
-            self.displayer.display(self.grid)
+            #self.displayer.display(self.grid)
+            self.print_board()
 
             # Exceeding the Time Allotted for Any Turn Terminates the Game
             self.updateAlarm()
@@ -80,14 +80,14 @@ class GameManager:
 
 
     def move(self, x, y) -> str:
-        if self.grid[x][y] != Grid.SPACE['empty']:
+        if self.grid.map[x][y] != Grid.SPACE['empty']:
             return 'ERROR'
         else:
             # Enemy board will contain information about miss or hit
-            response = self.enemy_board[x][y]
+            response = self.enemy_board.map[x][y]
             if response != Grid.SPACE['empty']:
                 # Player board will show the ship object if this move results in a sink
-                self.grid[x][y] = response if response.hit() == 'sunk' else Grid.SPACE['hit']
+                self.grid.map[x][y] = response if response.hit() == 'sunk' else Grid.SPACE['hit']
                 self.total_hits += 1
                 return 'hit' # assuming response is a pointer to a ship
             return 'miss'
@@ -108,25 +108,22 @@ class GameManager:
             if col + ship.size > self.cols:
                 return False
             for i in range(0, ship.size):
-                if board[row][col + i]:
+                if board.map[row][col + i]:
                     return False
             else:
                 for i in range(0, ship.size):
-                    board[row][col + i] = ship
+                    board.map[row][col + i] = ship
         elif direction == Direction.VERTICAL:
             if row + ship.size > self.rows:
                 return False
-            for i in range(0, ship.size):
-                if self.grid[row + i][col]:
-                    return False
             else:
                 for i in range(0, ship.size):
-                    board[row + i][col] = ship
+                    board.map[row + i][col] = ship
 
         return True
 
     def place_random_ships(self, board: Grid) -> None:
-        fleet = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)]
+        fleet = [Ship(5, '5'), Ship(4, '4'), Ship(3, '3'), Ship(3, '3'), Ship(2, '2')]
         self.fleet = []
         while fleet:
             ship = random.choice(fleet)
@@ -138,116 +135,18 @@ class GameManager:
                 fleet.remove(ship)
 
     def print_board(self) -> None:
-        for row in self.grid:
+        for row in self.grid.map:
             display_row = [1 if x else 0 for x in row]
             print(display_row)
 
 
-    standard_fleet = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)]
-standard_fleetm,
-
 def main():
     playerAI    = PlayerAI()
     displayer   = Displayer()
-    gameManager = GameManager(10, 10, playerAI, displayer, 0.25)
+    standard_fleet = [Ship(5, '5'), Ship(4, '4'), Ship(3, '3'), Ship(3, '3'), Ship(2, '2')]
+    gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, 0.25)
     game     = gameManager.start()
 
 if __name__ == '__main__':
     main()
 
-
-
-# class GameManager:
-#     SPACE = {
-#         'empty' : 0,
-#         'miss' : -1,
-#         'hit' : 1,
-#     }
-#     
-#     def __init__(self, rows = 10, cols = 10, playerAI=None, displayer=None):
-# 
-#     def updateAlarm(self) -> None:
-#         raise NotImplemented
-#     
-#     def fire_on(self, x, y) -> str:
-#         raise NotImplemented
-#     
-#     def place_random_ships(self, grid) -> Grid:
-#         raise NotImplemented
-#         
-#     def start(self) -> int:
-#         """ Main method that handles running the game of 2048 """
-#         
-#         # Initialize the game
-#         self.place_random_ships(self.grid)
-#         self.displayer.display(self.grid)
-# 
-#         # TODO: Below not worked on yet
-#         self.prevTime = time.process_time()
-# 
-#         while self.grid.canMove() and not self.over:
-#             # Copy to Ensure AI Cannot Change the Real Grid to Cheat
-#             gridCopy = self.grid.clone()
-# 
-#             move = None
-# 
-#             if turn == PLAYER_TURN:
-#                 print("Player's Turn: ", end="")
-#                 move = self.playerAI.getMove(gridCopy)
-#                 
-#                 print(actionDic[move])
-# 
-#                 # If move is valid, attempt to move the grid
-#                 if move != None and 0 <= move < 4:
-#                     if self.grid.canMove([move]):
-#                         self.grid.move(move)
-# 
-#                     else:
-#                         print("Invalid PlayerAI Move - Cannot move")
-#                         self.over = True
-#                 else:
-#                     print("Invalid PlayerAI Move - Invalid input")
-#                     self.over = True
-#             else:
-#                 print("Computer's turn: ")
-#                 move = self.computerAI.getMove(gridCopy)
-# 
-#                 # Validate Move
-#                 if move and self.grid.canInsert(move):
-#                     self.grid.setCellValue(move, self.getNewTileValue())
-#                 else:
-#                     print("Invalid Computer AI Move")
-#                     self.over = True
-# 
-#             # Comment out during heuristing optimizations to increase runtimes.
-#             # Printing slows down computation time.
-#             self.displayer.display(self.grid)
-# 
-#             # Exceeding the Time Allotted for Any Turn Terminates the Game
-#             self.updateAlarm()
-#             turn = 1 - turn
-# 
-#         return self.grid.getMaxTile()
-# 
-# start = time.perf_counter()
-# for i in range(0, 153300):
-#     game = Game()
-#     game.place_random_ships()
-# end = time.perf_counter()
-# for row in board2:
-#     print(row)
-
-# big = max(x for row in board2 for x in row)
-# small = min(x for row in board2 for x in row)
-# logthing = math.log(big - small, math.sqrt(big - small))
-# print(logthing)
-# for i in range(0, 10):
-#     for j in range(0, 10):
-#         board2[i][j] = int(math.log(board2[i][j], logthing))
-#     print(board2[i])
-
-# for i in range(0, 10):
-#     for j in range(0, 10):
-#         board2[i][j] = int(board2[i][j] / 1000)
-#     print(board2[i])
-# print("Total Time:", end - start, "seconds")
