@@ -68,19 +68,18 @@ class GameManager:
             gridCopy = self.grid.clone() # To ensure AI cant steal this?
             moves += 1
             x, y = self.playerAI.getMove(gridCopy) # Player board should be not original board... good call
-            print("MOVES " + str(moves))
+            print(f"{' ' * 6}MOVES {moves}")
             if moves > 10000:
                 print("Something is awry.....")
                 return Metrics(0,moves)
             self.move(x, y)
             # Comment out displayer when you need speed
-            #self.displayer.display(self.grid)
-            self.print_board()
+            self.displayer.display(self.grid)
+            #self.print_board()
 
             # Exceeding the Time Allotted for Any Turn Terminates the Game
             self.updateAlarm()
         return Metrics(0,-1)
-
 
 
     def move(self, x, y) -> str:
@@ -125,6 +124,7 @@ class GameManager:
                     board.map[row + i][col] = ship
 
         return True
+
 
     def place_random_ships(self, board: Grid) -> None:
         fleet = [Ship(5, '5'), Ship(4, '4'), Ship(3, '3'), Ship(3, '3'), Ship(2, '2')]

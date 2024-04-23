@@ -15,26 +15,24 @@ class Displayer():
 
     # TODO: Adapt to whichever hit miss values we give it
     def display(self, grid):
-        for i in range(3 * 10):
+        print(f"{Back.WHITE}{' ' * 24}{Back.BLACK}")
+        for i in range(10):
+            print(f"{Back.WHITE}{' ' * 2}{Back.BLACK}", end="")
             for j in range(10):
-                v = i // 3
-
-                if grid.map[v][j] == "-":
+                value = grid.map[i][j]
+                if value == 0:
                     color = Fore.LIGHTBLACK_EX
-                elif grid.map[v][j] == "O":
+                elif value == 1:
                     color = Fore.WHITE
-                elif grid.map[v][j] == "X":
+                elif value == "X":
                     color = Fore.RED
                 else:
-                    color = Fore.WHITE
+                    color = Fore.BLUE
+                    value = grid.map[i][j].name
 
-                if i % 3 == 1:
-                    string = str(grid.map[v][j]).center(7, " ")
-                else:
-                    string = " "
 
-                print(f"{color}{Back.BLACK}{string} ", end="")
-            print()
 
-            if i % 3 == 2:
-                print()
+                print(f"{color}{Back.BLACK}{value} ", end="")
+            print(f"{Back.WHITE}{' ' * 2}{Back.BLACK}")
+        print(f"{Back.WHITE}{' ' * 24}{Back.BLACK}")
+        print(f"{Fore.WHITE}")
