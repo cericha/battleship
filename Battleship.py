@@ -62,12 +62,16 @@ class GameManager:
         self.enemy_board = Grid()
         self.place_random_ships(self.enemy_board)
         self.displayer.display(self.grid)
+        moves = 0
         while self.total_hits < 17 and not self.over:
             self.prevTime = time.process_time()
             gridCopy = self.grid.clone() # To ensure AI cant steal this?
-            
+            moves += 1
             x, y = self.playerAI.getMove(gridCopy) # Player board should be not original board... good call
-            
+            print("MOVES " + str(moves))
+            if moves > 10000:
+                print("Something is awry.....")
+                return Metrics(0,moves)
             self.move(x, y)
             # Comment out displayer when you need speed
             #self.displayer.display(self.grid)
@@ -135,6 +139,8 @@ class GameManager:
                 fleet.remove(ship)
 
     def print_board(self) -> None:
+
+        print("AHHHH")
         for row in self.grid.map:
             display_row = [1 if x else 0 for x in row]
             print(display_row)
