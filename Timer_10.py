@@ -1,6 +1,11 @@
 from time import perf_counter
 
 
+class TimerError(Exception):
+    def __init__(self, message="Timer has not been started."):
+        super().__init__(message)
+
+
 class Timer:
     def __init__(
         self, time_limit: float = float("inf"), allowance: float = 0.0
@@ -22,10 +27,17 @@ class Timer:
         """Allows for starting and restarting timer"""
         self.start_time = perf_counter()
 
-    def time_left(self) -> float:
+    def elapsed_time(self) -> float:
+        if self.start_time is None:
+            raise TimerError("Timer has not been started.")
         return perf_counter() - self.start_time
+
+    def time_left(self) -> float:
+        if self.start_time is None:
+            raise TimerError("Timer has not been started.")
+        return max(0, self.max_time - (perf_counter() - self.start_time))
 
     def is_time_up(self) -> bool:
         if self.start_time is None:
-            raise RuntimeError("Did not start_timer before use")
-        return perf_counter() - self.start_time > self.max_time
+            raise TimerError("Timer has not been started.")
+        return (perf_counter() - self.start_time) > self.max_time
