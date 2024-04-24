@@ -20,7 +20,7 @@ class GameManager:
         timer: Optional[Timer] = None,
     ) -> None:
         self.rows = rows
-        self.cols = 10
+        self.cols = cols
         self.grid = Grid(rows, cols)
         self.enemy_board = self.generate_random_board()  # This makes self.fleet
         self.total_hits = 0  # With standard ships, ned
