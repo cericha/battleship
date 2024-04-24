@@ -1,5 +1,6 @@
 import random
-from typing import List, Optional  # For below python 3.10 support
+from typing import List, Tuple, Set, Optional  # For below python 3.10 support
+from copy import deepcopy
 
 from Displayer_10 import Displayer
 from Grid_10 import Grid
@@ -12,20 +13,22 @@ from Timer_10 import Timer
 class GameManager:
     def __init__(
         self,
-        ships: List[Ship],
+        ships: Set[Ship],
         rows: int = 10,
         cols: int = 10,
         playerAI: Optional[PlayerAI] = None,
         displayer: Optional[Displayer] = None,
         timer: Optional[Timer] = None,
     ) -> None:
+        self.ships = deepcopy(ships)
         self.rows = rows
         self.cols = cols
         self.grid = Grid(rows, cols)
-        self.enemy_board = self.generate_random_board()  # This makes self.fleet
         self.total_hits = 0  # With standard ships, ned
         self.needed_hits = sum([ship.size for ship in ships])
         self.over = False
+
+        self.enemy_board = self.initialize_game_board()  # This makes self.fleet
 
         self.playerAI = playerAI or PlayerAI()
         self.displayer = displayer or Displayer()
@@ -38,7 +41,7 @@ class GameManager:
 
         # # Initialize the game
         self.enemy_board = Grid()
-        self.place_random_ships(self.enemy_board)
+        self.deploy_random_fleet(self.enemy_board, self.ships)
         self.displayer.display(self.grid)
         self.displayer.display(self.enemy_board)
         moves = 0
@@ -80,67 +83,85 @@ class GameManager:
             self.grid.map[y][x] = Grid.SPACE["miss"]
             return "miss"
 
-    def generate_random_board(self) -> Grid:
+    def initialize_game_board(self, fleet=None) -> Grid:
+        # fleet should take on list[Tuple[ship, Tuple[int, int]]] or [(ship1, coord1), (ship2, coord2)]
+
         enemy_board = Grid()
-        self.place_random_ships(enemy_board)
+        if fleet is None:
+            self.deploy_random_fleet(enemy_board, self.ships)
+        else:
+            for ship, ship_coords in fleet:
+                self.place_ship(ship, ship_coords, enemy_board)
+
         return enemy_board
 
-    def place_ship(
-        self, ship: Ship, row: int, col: int, direction: Direction, board: Grid
-    ) -> bool:
-        """
-        Puts pointers to the given ship on some board Grid
-        """
+    def generate_ship_placement(
+        self, ship: Ship, row: int, col: int, direction: Direction
+    ):
         ship_coords = []
-        # Location is for the head of the ship
         if direction == Direction.HORIZONTAL:
             if col + ship.size > self.cols:
-                return False
-            for i in range(0, ship.size):
-                new_col = col + i
-                if board.map[row][new_col]:
-                    return False
-                ship_coords.append((row, new_col))
+                return False, ship_coords
+            ship_coords = [(row, col + i) for i in range(ship.size)]
 
         elif direction == Direction.VERTICAL:
             if row + ship.size > self.rows:
-                return False
-            for i in range(0, ship.size):
-                new_row = row + i
-                if board.map[new_row][col]:
-                    return False
-                ship_coords.append((new_row, col))
+                return False, ship_coords
+            ship_coords = [(row + i, col) for i in range(ship.size)]
+        return True, ship_coords
 
+    def can_place_ship(
+        self, ship: Ship, row: int, col: int, direction: Direction, board: Grid
+    ) -> Tuple[bool, List[Tuple[int, int]]]:
+        ship_coords = []
+        if board.map[row][col] != Grid.SPACE["empty"]:
+            return False, ship_coords
+
+        in_bounds, ship_coords = self.generate_ship_placement(ship, row, col, direction)
+
+        if not in_bounds or any(board.map[x][y] for x, y in ship_coords):
+            return False, ship_coords
+
+        return True, ship_coords
+
+    def place_ship(
+        self, ship: Ship, ship_coords: list[Tuple[int, int]], board: Grid
+    ) -> bool:
         for x, y in ship_coords:
             board.map[x][y] = ship
-
         return True
 
-    def place_random_ships(self, board: Grid) -> None:
-        fleet = [Ship(5, "5"), Ship(4, "4"), Ship(3, "3"), Ship(3, "3"), Ship(2, "2")]
+    def deploy_random_fleet(self, board: Grid, fleet: List[Ship]) -> None:
+        fleet = list(deepcopy(fleet))
         self.fleet = []
         while fleet:
             ship = random.choice(fleet)
-            x, y = random.randint(0, 9), random.randint(0, 9)
+            x, y = random.randint(0, self.cols - 1), random.randint(0, self.rows - 1)
             orientation = random.choice(list(Direction))
-            placed = self.place_ship(ship, y, x, orientation, board)
-            if placed:
-                self.fleet.append(ship)
-                fleet.remove(ship)
-        print(fleet)
+
+            placeable, ship_coords = self.can_place_ship(ship, y, x, orientation, board)
+
+            if not placeable:
+                continue
+
+            self.place_ship(ship, ship_coords, board)
+            self.fleet.append(ship)
+            fleet.remove(ship)
 
 
 def main() -> None:
     playerAI = PlayerAI()
     displayer = Displayer()
     timer = Timer(0.25)
-    standard_fleet = [
-        Ship(5, "5"),
-        Ship(4, "4"),
-        Ship(3, "3"),
-        Ship(3, "3"),
-        Ship(2, "2"),
-    ]
+    standard_fleet = set(
+        [
+            Ship(5, "5"),
+            Ship(4, "4"),
+            Ship(3, "3"),
+            Ship(3, "3"),
+            Ship(2, "2"),
+        ]
+    )
     gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, timer)
     gameManager.start()
 
