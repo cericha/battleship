@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Tuple
 
 class Grid:
     """
@@ -15,7 +16,7 @@ class Grid:
        self.cols = cols
        self.map = [[self.SPACE["empty"] for x in range(cols)] for y in range(rows)]
     
-    def getEmptySpaces(self) -> int:
+    def getEmptySpaces(self) -> Tuple[int, int]:
         empty_spaces = []
         for y in range(self.rows):
             for x in range(self.cols):
