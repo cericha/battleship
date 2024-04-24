@@ -1,34 +1,12 @@
 import random
-from enum import Enum
 from typing import List, Optional  # For below python 3.10 support
 
 from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
 from PlayerAI_10 import PlayerAI
+from Ship_10 import Ship, Direction
 from Timer_10 import Timer
-
-
-class Ship:
-    def __init__(self, size: int, name: str) -> None:
-        self.name = name
-        self.size = size
-        self.life = size
-
-    def hit(self) -> str:
-        self.life -= 1
-        if self.life == 0:
-            return "sunk"
-        else:
-            return "hit"
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-
-class Direction(Enum):
-    VERTICAL = 1
-    HORIZONTAL = 2
 
 
 class GameManager:
