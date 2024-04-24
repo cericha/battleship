@@ -164,7 +164,7 @@ def main() -> None:
         Ship(2, "2"),
     ]
     gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, 0.25)
-    game = gameManager.start()
+    gameManager.start()
 
 
 if __name__ == "__main__":

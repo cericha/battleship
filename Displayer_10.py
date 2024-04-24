@@ -1,4 +1,4 @@
-from colorama import Back, Fore, init
+from colorama import Back, Fore
 
 from Grid_10 import Grid
 
