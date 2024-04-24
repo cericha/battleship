@@ -1,6 +1,7 @@
 import random
-from Grid_10 import Grid
 from typing import Tuple
+
+from Grid_10 import Grid
 
 # This is akin to BaseAI in HW2, each member will make their own class with some method of getting move
 

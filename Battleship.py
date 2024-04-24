@@ -1,12 +1,12 @@
-from enum import Enum
 import random
 import time
+from enum import Enum
 from typing import List, Optional  # For below python 3.10 support
 
-from Grid_10 import Grid
-from PlayerAI_10 import PlayerAI
 from Displayer_10 import Displayer
+from Grid_10 import Grid
 from Metrics_10 import Metrics
+from PlayerAI_10 import PlayerAI
 
 
 class Ship:
