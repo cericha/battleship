@@ -1,4 +1,5 @@
 from colorama import init, Fore, Back
+from Grid_10 import Grid
 
 colorMap = {
     "Aircraft"      : 107,
@@ -10,11 +11,11 @@ colorMap = {
 
 
 class Displayer():
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     # TODO: Adapt to whichever hit miss values we give it
-    def display(self, grid):
+    def display(self, grid: Grid) -> None:
         print(f"{Back.WHITE}{' ' * 24}{Back.BLACK}")
         for i in range(10):
             print(f"{Back.WHITE}{' ' * 2}{Back.BLACK}", end="")
