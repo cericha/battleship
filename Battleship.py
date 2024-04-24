@@ -1,5 +1,4 @@
 import random
-import time
 from enum import Enum
 from typing import List, Optional  # For below python 3.10 support
 
@@ -7,6 +6,7 @@ from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
 from PlayerAI_10 import PlayerAI
+from Timer_10 import Timer
 
 
 class Ship:
@@ -39,7 +39,7 @@ class GameManager:
         cols: int = 10,
         playerAI: Optional[PlayerAI] = None,
         displayer: Optional[Displayer] = None,
-        timeLimit: int = -1,
+        timer: Optional[Timer] = None,
     ) -> None:
         self.rows = rows
         self.cols = 10
@@ -51,12 +51,7 @@ class GameManager:
 
         self.playerAI = playerAI or PlayerAI()
         self.displayer = displayer or Displayer()
-        self.timeLimit = timeLimit
-
-    def updateAlarm(self) -> None:
-        if time.process_time() - self.prevTime > self.timeLimit:
-            self.over = True
-        self.prevTime = time.process_time()
+        self.timer = timer or Timer()  # Default initialization is infinite time
 
     def start(self) -> Metrics:
         """
@@ -70,7 +65,7 @@ class GameManager:
         self.displayer.display(self.enemy_board)
         moves = 0
         while self.total_hits < self.needed_hits and not self.over:
-            self.prevTime = time.process_time()
+            self.timer.start_timer()
             gridCopy = self.grid.clone()  # To ensure AI cant steal this?
             moves += 1
             x, y = self.playerAI.getMove(gridCopy)
@@ -84,7 +79,9 @@ class GameManager:
             self.displayer.display(self.grid)
 
             # Exceeding the Time Allotted for Any Turn Terminates the Game
-            self.updateAlarm()
+            self.over = self.timer.is_time_up()
+        if self.over:
+            print("Game Over - Ran out of time!")
         self.displayer.display(self.enemy_board)
         return Metrics(0, -1)
 
@@ -156,6 +153,7 @@ class GameManager:
 def main() -> None:
     playerAI = PlayerAI()
     displayer = Displayer()
+    timer = Timer(0.25)
     standard_fleet = [
         Ship(5, "5"),
         Ship(4, "4"),
@@ -163,7 +161,7 @@ def main() -> None:
         Ship(3, "3"),
         Ship(2, "2"),
     ]
-    gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, 0.25)
+    gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, timer)
     gameManager.start()
 
 
