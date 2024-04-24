@@ -145,13 +145,6 @@ class GameManager:
                 fleet.remove(ship)
         print(fleet)
 
-    def print_board(self) -> None:
-
-        print("AHHHH")
-        for row in self.grid.map:
-            display_row = [1 if x else 0 for x in row]
-            print(display_row)
-
 
 def main():
     playerAI    = PlayerAI()
