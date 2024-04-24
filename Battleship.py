@@ -56,43 +56,46 @@ class GameManager:
         """
         Starts the game and goes until completion or failure
         """
-        # """ Main method that handles running the game of 2048 """
         
         # # Initialize the game
         self.enemy_board = Grid()
         self.place_random_ships(self.enemy_board)
         self.displayer.display(self.grid)
+        self.displayer.display(self.enemy_board)
         moves = 0
-        while self.total_hits < 17 and not self.over:
+        while self.total_hits < self.needed_hits and not self.over:
             self.prevTime = time.process_time()
             gridCopy = self.grid.clone() # To ensure AI cant steal this?
             moves += 1
-            x, y = self.playerAI.getMove(gridCopy) # Player board should be not original board... good call
+            x, y = self.playerAI.getMove(gridCopy)
             print(f"{' ' * 6}MOVES {moves}")
-            if moves > 10000:
+            if moves > 150:
                 print("Something is awry.....")
+                self.displayer.display(self.enemy_board)
                 return Metrics(0,moves)
             self.move(x, y)
             # Comment out displayer when you need speed
             self.displayer.display(self.grid)
-            #self.print_board()
 
             # Exceeding the Time Allotted for Any Turn Terminates the Game
             self.updateAlarm()
+        self.displayer.display(self.enemy_board)
         return Metrics(0,-1)
 
 
-    def move(self, x, y) -> str:
-        if self.grid.map[x][y] != Grid.SPACE['empty']:
+    def move(self, x, y) -> str: 
+        if self.grid.map[y][x] != Grid.SPACE['empty']:
+            print('ERROR')
             return 'ERROR'
         else:
             # Enemy board will contain information about miss or hit
-            response = self.enemy_board.map[x][y]
+            response = self.enemy_board.map[y][x]
             if response != Grid.SPACE['empty']:
                 # Player board will show the ship object if this move results in a sink
-                self.grid.map[x][y] = response if response.hit() == 'sunk' else Grid.SPACE['hit']
+                self.grid.map[y][x] = response if response.hit() == 'sunk' else Grid.SPACE['hit']
                 self.total_hits += 1
                 return 'hit' # assuming response is a pointer to a ship
+            self.grid.map[y][x] = Grid.SPACE['miss']
             return 'miss'
 
     def generate_random_board(self):
@@ -113,16 +116,19 @@ class GameManager:
             for i in range(0, ship.size):
                 if board.map[row][col + i]:
                     return False
-            else:
-                for i in range(0, ship.size):
-                    board.map[row][col + i] = ship
+            # else we have valid ship placement
+            for i in range(0, ship.size):
+                board.map[row][col + i] = ship
         elif direction == Direction.VERTICAL:
             if row + ship.size > self.rows:
                 return False
-            else:
-                for i in range(0, ship.size):
-                    board.map[row + i][col] = ship
-
+            
+            for i in range(0, ship.size):
+                if board.map[row + i][col]:
+                    return False
+            # else we have valid ship placement
+            for i in range(0, ship.size):
+                board.map[row + i][col] = ship
         return True
 
 
@@ -133,10 +139,11 @@ class GameManager:
             ship = random.choice(fleet)
             x, y = random.randint(0, 9), random.randint(0, 9)
             orientation = random.choice(list(Direction))
-            placed = self.place_ship(ship, x, y, orientation, board)
+            placed = self.place_ship(ship, y, x, orientation, board)
             if placed:
                 self.fleet.append(ship)
                 fleet.remove(ship)
+        print(fleet)
 
     def print_board(self) -> None:
 

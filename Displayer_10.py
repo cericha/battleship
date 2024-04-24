@@ -24,7 +24,7 @@ class Displayer():
                     color = Fore.LIGHTBLACK_EX
                 elif value == 1:
                     color = Fore.WHITE
-                elif value == "X":
+                elif value == 'X':
                     color = Fore.RED
                 else:
                     color = Fore.BLUE
