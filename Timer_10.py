@@ -1,4 +1,4 @@
-from time import process_time
+from time import perf_counter
 
 
 class Timer:
@@ -20,9 +20,12 @@ class Timer:
 
     def start_timer(self) -> None:
         """Allows for starting and restarting timer"""
-        self.start_time = process_time()
+        self.start_time = perf_counter()
+
+    def time_left(self) -> float:
+        return perf_counter() - self.start_time
 
     def is_time_up(self) -> bool:
         if self.start_time is None:
             raise RuntimeError("Did not start_timer before use")
-        return process_time() - self.start_time > self.max_time
+        return perf_counter() - self.start_time > self.max_time
