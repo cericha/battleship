@@ -1,7 +1,7 @@
 from enum import Enum
 import random
 import time
-from copy import deepcopy
+from typing import List, Optional #For below python 3.10 support
 
 from Grid_10 import Grid
 from PlayerAI_10 import PlayerAI
@@ -10,19 +10,19 @@ from Metrics_10 import Metrics
 
 
 class Ship:
-    def __init__(self, size, name):
+    def __init__(self, size: int, name: str) -> None:
         self.name = name
         self.size = size
         self.life = size
 
-    def hit(self):
+    def hit(self) -> str:
         self.life -= 1
         if self.life == 0:
             return 'sunk'
         else:
             return 'hit'
      
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name)
 
 
@@ -32,8 +32,15 @@ class Direction(Enum):
 
 
 class GameManager:
-
-    def __init__(self, ships, rows = 10, cols = 10, playerAI=None, displayer=None, timeLimit=-1):
+    def __init__(
+        self, 
+        ships: List[Ship], 
+        rows: int = 10, 
+        cols: int = 10, 
+        playerAI: Optional[PlayerAI] = None, 
+        displayer: Optional[Displayer] = None, 
+        timeLimit: int = -1
+    ) -> None:
         self.rows = rows
         self.cols = 10
         self.grid = Grid(rows, cols)
@@ -83,7 +90,7 @@ class GameManager:
         return Metrics(0,-1)
 
 
-    def move(self, x, y) -> str: 
+    def move(self, x: int, y: int) -> str: 
         if self.grid.map[y][x] != Grid.SPACE['empty']:
             print('ERROR')
             return 'ERROR'
@@ -98,13 +105,20 @@ class GameManager:
             self.grid.map[y][x] = Grid.SPACE['miss']
             return 'miss'
 
-    def generate_random_board(self):
+    def generate_random_board(self) -> Grid:
         enemy_board = Grid()
         self.place_random_ships(enemy_board)
         return enemy_board
         
 
-    def place_ship(self, ship: Ship, row: int, col: int, direction: Direction, board: Grid) -> bool:
+    def place_ship(
+        self,
+        ship: Ship,
+        row: int,
+        col: int,
+        direction: Direction,
+        board: Grid
+    ) -> bool:
         """
         Puts pointers to the given ship on some board Grid
         """
@@ -146,7 +160,7 @@ class GameManager:
         print(fleet)
 
 
-def main():
+def main() -> None:
     playerAI    = PlayerAI()
     displayer   = Displayer()
     standard_fleet = [Ship(5, '5'), Ship(4, '4'), Ship(3, '3'), Ship(3, '3'), Ship(2, '2')]
