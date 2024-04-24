@@ -35,7 +35,7 @@ class Timer:
     def time_left(self) -> float:
         if self.start_time is None:
             raise TimerError("Timer has not been started.")
-        return max(0, self.max_time - (perf_counter() - self.start_time))
+        return max(0.0, self.max_time - (perf_counter() - self.start_time))
 
     def is_time_up(self) -> bool:
         if self.start_time is None:
