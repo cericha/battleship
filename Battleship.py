@@ -91,27 +91,29 @@ class GameManager:
         """
         Puts pointers to the given ship on some board Grid
         """
-        # global board2
+        ship_coords = []
         # Location is for the head of the ship
         if direction == Direction.HORIZONTAL:
             if col + ship.size > self.cols:
                 return False
             for i in range(0, ship.size):
-                if board.map[row][col + i]:
+                new_col = col + i
+                if board.map[row][new_col]:
                     return False
-            # else we have valid ship placement
-            for i in range(0, ship.size):
-                board.map[row][col + i] = ship
+                ship_coords.append((row, new_col))
+
         elif direction == Direction.VERTICAL:
             if row + ship.size > self.rows:
                 return False
-
             for i in range(0, ship.size):
-                if board.map[row + i][col]:
+                new_row = row + i
+                if board.map[new_row][col]:
                     return False
-            # else we have valid ship placement
-            for i in range(0, ship.size):
-                board.map[row + i][col] = ship
+                ship_coords.append((new_row, col))
+
+        for x, y in ship_coords:
+            board.map[x][y] = ship
+
         return True
 
     def place_random_ships(self, board: Grid) -> None:
