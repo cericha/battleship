@@ -2,15 +2,15 @@ from colorama import init, Fore, Back
 from Grid_10 import Grid
 
 colorMap = {
-    "Aircraft"      : 107,
-    "Battleship"    : 46,
-    "Cruiser"       : 106,
-    "Destroyer"     : 44,
-    "Submarine"     : 104,
+    "Aircraft": 107,
+    "Battleship": 46,
+    "Cruiser": 106,
+    "Destroyer": 44,
+    "Submarine": 104,
 }
 
 
-class Displayer():
+class Displayer:
     def __init__(self) -> None:
         pass
 
@@ -25,13 +25,11 @@ class Displayer():
                     color = Fore.LIGHTBLACK_EX
                 elif value == 1:
                     color = Fore.WHITE
-                elif value == 'X':
+                elif value == "X":
                     color = Fore.RED
                 else:
                     color = Fore.BLUE
                     value = grid.map[i][j].name
-
-
 
                 print(f"{color}{Back.BLACK}{value} ", end="")
             print(f"{Back.WHITE}{' ' * 2}{Back.BLACK}")
