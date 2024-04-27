@@ -11,6 +11,7 @@ class PlayerAI:
         self.strategy = strategy
 
     def getMove(self, board: Grid) -> Tuple[int, int]:
+        # TODO: Maybe make each strategy a class?
         if self.strategy is None or self.strategy == "baseline":
             return self.getMoveBaseline(board)
         elif self.strategy == "human":
