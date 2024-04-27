@@ -7,11 +7,12 @@
       "columns": 10
     },
     "ships": [
-      {"size": 5, "id": "5"},
-      {"size": 4, "id": "4"},
-      {"size": 3, "id": "3"},
-      {"size": 3, "id": "2"},
-      {"size": 2, "id": "1"}
-    ]
+      {"size": 5, "name": "Carrier"},
+      {"size": 4, "name": "Battleshpi"},
+      {"size": 3, "name": "Cruiser"},
+      {"size": 3, "name": "Submarine"},
+      {"size": 2, "name": "Destroyer"}
+    ],
+    "Player": false
   }
   

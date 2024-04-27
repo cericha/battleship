@@ -152,9 +152,9 @@ def main() -> None:
 
     # Load default values
     ships = config["ships"]
-    standard_fleet = [Ship(s["size"], s["id"]) for s in ships]
+    standard_fleet = [Ship(s["size"], s["name"]) for s in ships]
     allowed_time = float(config["timer"]["timeout"])
-
+    player_or_ai = config["player"]
     rows = config["board"]["rows"]
     columns = config["board"]["columns"]
 
