@@ -10,6 +10,9 @@ class PlayerAI:
     def __init__(self, strategy=None):
         self.strategy = strategy
 
+    def parse_move(self, move: str) -> Tuple[int, int]:
+        return tuple(map(int, str(move).split(" ")))
+
     def getMove(self, board: Grid) -> Tuple[int, int]:
         # TODO: Maybe make each strategy a class?
         if self.strategy is None or self.strategy == "baseline":
@@ -20,7 +23,9 @@ class PlayerAI:
             print(f"Solution strategy for {self.strategy} does not exit. Exiting")
             exit(1)
 
-    def getMoveHuman(self, board: Grid): ...
+    def getMoveHuman(self, board: Grid):
+        move = input("Enter next move: ")
+        return self.parse_move(move)
 
     def getMoveBaseline(self, board: Grid):
         choices = board.getEmptySpaces()
