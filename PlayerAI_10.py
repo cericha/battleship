@@ -7,6 +7,20 @@ from Grid_10 import Grid
 
 
 class PlayerAI:
+    def __init__(self, strategy=None):
+        self.strategy = strategy
+
     def getMove(self, board: Grid) -> Tuple[int, int]:
+        if self.strategy is None or self.strategy == "baseline":
+            return self.getMoveBaseline(board)
+        elif self.strategy == "human":
+            return self.getMoveHuman(board)
+        else:
+            print(f"Solution strategy for {self.strategy} does not exit. Exiting")
+            exit(1)
+
+    def getMoveHuman(self, board: Grid): ...
+
+    def getMoveBaseline(self, board: Grid):
         choices = board.getEmptySpaces()
         return (0, 0) if len(choices) == 0 else random.choice(choices)

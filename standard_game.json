@@ -13,6 +13,6 @@
       {"size": 3, "name": "Submarine"},
       {"size": 2, "name": "Destroyer"}
     ],
-    "player": false
+    "strategy": "baseline"
   }
   

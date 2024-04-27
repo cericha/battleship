@@ -154,12 +154,12 @@ def main() -> None:
     ships = config["ships"]
     standard_fleet = [Ship(s["size"], s["name"]) for s in ships]
     allowed_time = float(config["timer"]["timeout"])
-    player_or_ai = config["player"]
+    strategy = config["strategy"]
     rows = config["board"]["rows"]
     columns = config["board"]["columns"]
 
     # Instantiate game objects
-    playerAI = PlayerAI()
+    playerAI = PlayerAI(strategy)
     displayer = Displayer()  # TODO - Add flag to not display enemy board to config
     timer = Timer(allowed_time)
     gameManager = GameManager(standard_fleet, rows, columns, playerAI, displayer, timer)
