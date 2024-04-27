@@ -20,29 +20,34 @@ class GameManager:
         playerAI: Optional[PlayerAI] = None,
         displayer: Optional[Displayer] = None,
         timer: Optional[Timer] = None,
+        show_enemy_board: bool = True,
     ) -> None:
         self.rows = rows
         self.cols = cols
-        self.grid = Grid(rows, cols)
-        self.enemy_board = self.generate_random_board()  # This makes self.fleet
-        self.total_hits = 0  # With standard ships, ned
-        self.needed_hits = sum([ship.size for ship in ships])
-        self.over = False
-
+        self.ships = ships
+        self.enemyDisplay = show_enemy_board
         self.playerAI = playerAI or PlayerAI()
         self.displayer = displayer or Displayer()
         self.timer = timer or Timer()  # Default initialization is infinite time
 
-    def start(self) -> Metrics:
+    def start(self) -> None:
+        self.grid = Grid(self.rows, self.cols)
+        self.enemy_board = self.generate_random_board()
+        self.total_hits = 0
+        self.needed_hits = sum([ship.size for ship in self.ships])
+        self.over = False
+
+        self.run_game()
+
+    def run_game(self) -> Metrics:
         """
         Starts the game and goes until completion or failure
         """
 
         # # Initialize the game
-        self.enemy_board = Grid()
-        self.place_random_ships(self.enemy_board)
         self.displayer.display(self.grid)
-        self.displayer.display(self.enemy_board)
+        if self.enemyDisplay:
+            self.displayer.display(self.enemy_board)
         moves = 0
         while self.total_hits < self.needed_hits and not self.over:
             self.timer.start_timer()
@@ -54,7 +59,7 @@ class GameManager:
                 print("Something is awry.....")
                 self.displayer.display(self.enemy_board)
                 return Metrics(0, moves)
-            self.move(x, y)
+            self.make_move(x, y)
             # Comment out displayer when you need speed
             self.displayer.display(self.grid)
 
@@ -65,7 +70,7 @@ class GameManager:
         self.displayer.display(self.enemy_board)
         return Metrics(0, -1)
 
-    def move(self, x: int, y: int) -> str:
+    def make_move(self, x: int, y: int) -> str:
         if self.grid.map[y][x] != Grid.SPACE["empty"]:
             print("ERROR")
             return "ERROR"
@@ -157,12 +162,16 @@ def main() -> None:
     strategy = config["strategy"]
     rows = config["board"]["rows"]
     columns = config["board"]["columns"]
+    displayer_on = config["displayer"]["display"]
+    show_enemy_board = config["displayer"]["show_enemy_board"]
 
     # Instantiate game objects
     playerAI = PlayerAI(strategy)
-    displayer = Displayer()  # TODO - Add flag to not display enemy board to config
+    displayer = Displayer(displayer_on)
     timer = Timer(allowed_time)
-    gameManager = GameManager(standard_fleet, rows, columns, playerAI, displayer, timer)
+    gameManager = GameManager(
+        standard_fleet, rows, columns, playerAI, displayer, timer, show_enemy_board
+    )
 
     # Start game
     gameManager.start()

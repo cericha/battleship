@@ -12,11 +12,14 @@ colorMap = {
 
 
 class Displayer:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, toggle=True) -> None:
+        self.displayer_toggle = toggle
 
     # TODO: Adapt to whichever hit miss values we give it
     def display(self, grid: Grid) -> None:
+        if not self.displayer_toggle:
+            return
+
         print(f"{Back.WHITE}{' ' * 24}{Back.BLACK}")
         for i in range(10):
             print(f"{Back.WHITE}{' ' * 2}{Back.BLACK}", end="")

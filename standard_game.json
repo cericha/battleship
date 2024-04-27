@@ -13,6 +13,10 @@
       {"size": 3, "name": "Submarine"},
       {"size": 2, "name": "Destroyer"}
     ],
+    "displayer": {
+        "display": true,
+        "show_enemy_board": false
+    },
     "strategy": "baseline"
   }
   
