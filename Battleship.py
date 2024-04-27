@@ -1,4 +1,6 @@
+import json
 import random
+import sys
 from typing import List, Optional  # For below python 3.10 support
 
 from Displayer_10 import Displayer
@@ -131,17 +133,38 @@ class GameManager:
 
 
 def main() -> None:
+    # Parse input
+    if len(sys.argv) == 1:
+        configuration_path = "standard_game.json"
+    elif len(sys.argv) == 2:
+        configuration_path = sys.argv[1]
+    else:
+        print("Error: Incorrect number of arguments.")
+        exit(1)
+
+    # Initialize configuration file
+    try:
+        with open(configuration_path, "r") as file:
+            config = json.load(file)
+    except Exception as e:
+        print(e)
+        exit(1)
+
+    # Load default values
+    ships = config["ships"]
+    standard_fleet = [Ship(s["size"], s["id"]) for s in ships]
+    allowed_time = float(config["timer"]["timeout"])
+
+    rows = config["board"]["rows"]
+    columns = config["board"]["columns"]
+
+    # Instantiate game objects
     playerAI = PlayerAI()
-    displayer = Displayer()
-    timer = Timer(0.25)
-    standard_fleet = [
-        Ship(5, "5"),
-        Ship(4, "4"),
-        Ship(3, "3"),
-        Ship(3, "3"),
-        Ship(2, "2"),
-    ]
-    gameManager = GameManager(standard_fleet, 10, 10, playerAI, displayer, timer)
+    displayer = Displayer()  # TODO - Add flag to not display enemy board to config
+    timer = Timer(allowed_time)
+    gameManager = GameManager(standard_fleet, rows, columns, playerAI, displayer, timer)
+
+    # Start game
     gameManager.start()
 
 

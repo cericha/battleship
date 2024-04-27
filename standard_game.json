@@ -1,0 +1,17 @@
+{
+    "timer": {
+      "timeout": "inf"
+    },
+    "board": {
+      "rows": 10,
+      "columns": 10
+    },
+    "ships": [
+      {"size": 5, "id": "5"},
+      {"size": 4, "id": "4"},
+      {"size": 3, "id": "3"},
+      {"size": 3, "id": "2"},
+      {"size": 2, "id": "1"}
+    ]
+  }
+  
