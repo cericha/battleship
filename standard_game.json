@@ -13,6 +13,6 @@
       {"size": 3, "name": "Submarine"},
       {"size": 2, "name": "Destroyer"}
     ],
-    "Player": false
+    "player": false
   }
   
