@@ -7,6 +7,9 @@ from Grid_10 import Grid
 
 
 class PlayerAI:
+    def parse_move(self, move: str) -> Tuple[int, int]:
+        return tuple(map(int, str(move).split(" ")))
+
     def getMove(self, board: Grid) -> Tuple[int, int]:
-        choices = board.getEmptySpaces()
-        return (0, 0) if len(choices) == 0 else random.choice(choices)
+        move = input("Enter next move: ")
+        return self.parse_move(move)

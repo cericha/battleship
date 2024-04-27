@@ -39,8 +39,8 @@ class GameManager:
         # # Initialize the game
         self.enemy_board = Grid()
         self.place_random_ships(self.enemy_board)
-        self.displayer.display(self.grid)
-        self.displayer.display(self.enemy_board)
+        # self.displayer.display(self.grid)
+        # self.displayer.display(self.enemy_board)
         moves = 0
         while self.total_hits < self.needed_hits and not self.over:
             self.timer.start_timer()
@@ -133,7 +133,7 @@ class GameManager:
 def main() -> None:
     playerAI = PlayerAI()
     displayer = Displayer()
-    timer = Timer(0.25)
+    timer = Timer(float("inf"))
     standard_fleet = [
         Ship(5, "5"),
         Ship(4, "4"),
