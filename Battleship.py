@@ -6,7 +6,7 @@ from typing import List, Optional  # For below python 3.10 support
 from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
-from PlayerAI_10 import PlayerAI
+from PlayerAI_10 import BaselineAI
 from Ship_10 import Ship, Direction
 from Timer_10 import Timer
 
@@ -17,7 +17,7 @@ class GameManager:
         ships: List[Ship],
         rows: int = 10,
         cols: int = 10,
-        playerAI: Optional[PlayerAI] = None,
+        playerAI=None,
         displayer: Optional[Displayer] = None,
         timer: Optional[Timer] = None,
         show_enemy_board: bool = True,
@@ -26,7 +26,7 @@ class GameManager:
         self.cols = cols
         self.ships = ships
         self.enemyDisplay = show_enemy_board
-        self.playerAI = playerAI or PlayerAI()
+        self.playerAI = playerAI or BaselineAI
         self.displayer = displayer or Displayer()
         self.timer = timer or Timer()  # Default initialization is infinite time
 
@@ -53,7 +53,7 @@ class GameManager:
             self.timer.start_timer()
             gridCopy = self.grid.clone()  # To ensure AI cant steal this?
             moves += 1
-            x, y = self.playerAI.getMove(gridCopy)
+            x, y = self.playerAI.get_move(gridCopy)
             print(f"{' ' * 6}MOVES {moves}")
             if moves > 150:
                 print("Something is awry.....")
@@ -165,8 +165,20 @@ def main() -> None:
     displayer_on = config["displayer"]["display"]
     show_enemy_board = config["displayer"]["show_enemy_board"]
 
-    # Instantiate game objects
-    playerAI = PlayerAI(strategy)
+    # Initialize movement strategy
+    if strategy == "human":
+        from PlayerAI_10 import HumanPlayer
+
+        playerAI = HumanPlayer()
+    elif strategy == "baseline":
+        from PlayerAI_10 import BaselineAI
+
+        playerAI = BaselineAI()
+    else:
+        print(f"Unknown movement strategy given {strategy}")
+        exit(1)
+
+    # Initialize game objects
     displayer = Displayer(displayer_on)
     timer = Timer(allowed_time)
     gameManager = GameManager(
