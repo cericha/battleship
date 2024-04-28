@@ -9,9 +9,23 @@ from Grid_10 import Grid
 class MoveStrategy:
 
     def __init__(self):
-        pass
+        self.prev_move = None
+
+    def get_prev_move_result(self, board: Grid):
+        if self.prev_move == None:
+            return "Have not made a move yet"
+        x, y = self.prev_move
+        if board.map[y][x] == Grid.SPACE["empty"]:
+            return f"x:{x} y:{y} has not been fired on"
+        elif board.map[y][x] == Grid.SPACE["miss"]:
+            return "miss"
+        else:
+            return "hit"
 
     def get_move(self, move: str) -> Tuple[int, int]:
+        """
+        make sure to set self.prev_move to whatever move you determine
+        """
         pass
 
 
@@ -26,7 +40,10 @@ class HumanPlayer(MoveStrategy):
 
 
 class BaselineAI(MoveStrategy):
-
+        
     def get_move(self, board: Grid):
         choices = board.getEmptySpaces()
-        return (0, 0) if len(choices) == 0 else random.choice(choices)
+        choice = random.choice(choices)
+        # save prev move, just assuming after this function we call make_move
+        self.prev_move = choice
+        return (0, 0) if len(choices) == 0 else choice
