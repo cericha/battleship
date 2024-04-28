@@ -8,8 +8,8 @@ from Grid_10 import Grid
 
 class MoveStrategy:
 
-    def __init__(self, strategy=None):
-        self.strategy = strategy
+    def __init__(self):
+        pass
 
     def get_move(self, move: str) -> Tuple[int, int]:
         pass
