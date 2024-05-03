@@ -53,3 +53,7 @@ In deciding how to search through a CSP we consider the following:
         - We want to choose coordinates that leave the most space available to the other ships. This means having the boat closer to the center. 
 3. Can we detect inevitable failure early?
     1. The only way we find out is after making a move on the board
+
+
+
+Issue with the amount of global constraints that exist when we model the problem as each ship has 3 variables
