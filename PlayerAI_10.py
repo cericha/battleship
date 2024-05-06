@@ -19,8 +19,10 @@ class MoveStrategy:
             return f"x:{x} y:{y} has not been fired on"
         elif board.map[y][x] == Grid.SPACE["miss"]:
             return "miss"
-        else:
+        elif board.map[y][x] == Grid.SPACE['hit']:
             return "hit"
+        else:
+            return "sunk"
 
     def get_move(self, move: str) -> Tuple[int, int]:
         """

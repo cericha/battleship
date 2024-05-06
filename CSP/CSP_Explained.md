@@ -23,15 +23,14 @@ c variables per subproblem: O((n/c) \* d^c)
 # Implementation
 Decide where to guess based on the selection order for a CSP.
 ### Subproblem for finding a ship
-1. Start with ship of length 5 (MRV)
-2. random assumption for V (MRV)
-3. Depending on available X/Y for ship 5, start guessing spots that leave the most space for other ships (LCV)
-4. Get result of guess:
-    1. On Hit: Begin subproblem CSP to find sink the ship that was hit
-    2. On Miss: Update All impossible values based on missed shot
-6. Run CSP until we find the 3 piece combo, then go to next highest length ship that's not already solved (some may be solved by accident as we're guessing)
+1. # 1. Check result of last move
+    # 2. Adjust domains for assignment
+    # 3. Get MRV
+    # 4. For each Value, look-ahead 1 move to see how it effects other ships
 
 ### Subproblem for sinking a ship
+
+
 
 1. Assume x, y that's hit is the head of a ship
 2. guess left/right or up/down to find V
@@ -57,3 +56,7 @@ In deciding how to search through a CSP we consider the following:
 
 
 Issue with the amount of global constraints that exist when we model the problem as each ship has 3 variables
+
+
+
+

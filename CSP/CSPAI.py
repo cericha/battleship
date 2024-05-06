@@ -6,21 +6,21 @@ from Rules import *
 
 SHIP_LABELS = ["5", "4", "31", "32", "2"]
 
-# VARIABLES = [ # n = 15
-# f'V{label}' for label in SHIP_LABELS ] + [ # Vertical
-# f'X{label}' for label in SHIP_LABELS ] + [ # X coord
-# f'Y{label}' for label in SHIP_LABELS ] # Y Coord
+VARIABLES = [ # n = 15
+f'V{label}' for label in SHIP_LABELS ] + [ # Vertical
+f'X{label}' for label in SHIP_LABELS ] + [ # X coord
+f'Y{label}' for label in SHIP_LABELS ] # Y Coord
 
-VARIABLES = set(SHIP_LABELS) # n = 5
+# VARIABLES = set(SHIP_LABELS) # n = 5
 
-# DOMAIN = set([x for x in range(10)] + [True, False]) # d = 12
+DOMAIN = set([x for x in range(10)] + [True, False]) # d = 12
 
 # d = 200, every x,y combo and then verticality
-DOMAIN = set()
-for x in range(10):
-    for y in range(10):
-        for v in [True, False]:
-            DOMAIN.add((x,y,v))
+# DOMAIN = set()
+# for x in range(10):
+#     for y in range(10):
+#         for v in [True, False]:
+#             DOMAIN.add((x,y,v))
 
 RULES = {
     'vertical_domain' : vertical_domain,
@@ -71,6 +71,7 @@ class CSPAI(MoveStrategy):
     def __init__(self):
         # define an assignment
         self.assignment = Assignment()
+        self.la
         pass
     def get_next_biggest_ship(self):
         """
@@ -87,6 +88,9 @@ class CSPAI(MoveStrategy):
         pass
     def get_move(self, board: Grid) -> Tuple[int, int]:
         # See if last move was a hit
+
+        # get MRV
+        # choose domain value based on how much it restricts future choices
         if last_move_hit():
             return self.sink_ship()
         else:
