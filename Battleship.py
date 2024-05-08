@@ -67,6 +67,7 @@ class GameManager:
             self.over = self.timer.is_time_up()
         if self.over:
             print("Game Over - Ran out of time!")
+        print("Original Enemy Board:")
         self.displayer.display(self.enemy_board)
         return Metrics(0, -1)
 

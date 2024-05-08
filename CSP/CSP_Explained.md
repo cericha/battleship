@@ -30,8 +30,6 @@ Decide where to guess based on the selection order for a CSP.
 
 ### Subproblem for sinking a ship
 
-
-
 1. Assume x, y that's hit is the head of a ship
 2. guess left/right or up/down to find V
 3. guess until sink
@@ -45,13 +43,13 @@ In deciding how to search through a CSP we consider the following:
 
 1. Which variable should be assigned next?
 	1. MRV, minimum remaining values:
-		1. V: Technically only 2 possible values for every ship, BUT depending on what's already been missed one may be more likely.
-		2. X/Y: The original remaining values depends on the ship length and the assumed V because we don't want our ship going out of bounds.
+		1. simply check the size of domains
 2. In what order should its values be tried?
 	1. LCV, least constraining value:
-        - We want to choose coordinates that leave the most space available to the other ships. This means having the boat closer to the center. 
+       - This actually isn't entirely appropriate for this augmented problem
+    2. Instead, we try to make future guesses more likely to hit something, so we're trying to restrict future variables as much as we can
 3. Can we detect inevitable failure early?
-    1. The only way we find out is after making a move on the board
+    1. The only way we find out is after making a move on the board, but as we go along we adjust our assignment
 
 
 

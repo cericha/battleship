@@ -34,6 +34,7 @@ class MoveStrategy:
 class HumanPlayer(MoveStrategy):
 
     def parse_move(self, move: str) -> Tuple[int, int]:
+        # No sanitation here, easy for invalid input to fail out the function
         return tuple(map(int, str(move).split(" ")))
 
     def get_move(self, board: Grid):
