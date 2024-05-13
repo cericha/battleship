@@ -1,19 +1,41 @@
-from AI_FINAL_PROJ.battleship.CSP.CSPAI import Assignment, SHIP_LABELS, VARIABLES, DOMAIN
-# Assignment
-def changing_assignment_copy_doesnt_effect_original():
-    original = Assignment()
-    copy = original.copy()
-    copy.adjust("V5", True)
-    assert original == [1, 2, 3], "Changing the copy should not affect the original"
+from CSP.CSP_AI import Assignment, SHIP_LABELS, VARIABLES, DOMAIN
+from Grid_10 import Grid
+from Ship_10 import Ship
 
-def changing_assignment_original_works():
-    original = [1, 2, 3]
-    copy = original
-    original.append(4)
-    assert copy == [1, 2, 3, 4], "Changes to the original should reflect in the copy when assigned directly"
 
-def copy_assignment_works():
-    original = [1, 2, 3]
-    copy = original.copy()
-    copy.append(4)
-    assert original == [1, 2, 3], "Changes to the copy should not affect the original when using .copy()"
+TIMES_TO_RUN = 100
+
+
+
+
+# Adjusted version of one that is present in game manager
+def place_ship(
+        self, ship: Ship, row: int, col: int, direction, board: Grid
+    ) -> bool:
+        """
+        Puts pointers to the given ship on some board Grid
+        """
+        ship_coords = []
+        # Location is for the head of the ship
+        if direction == 'horizontal':
+            if col + ship.size > self.cols:
+                return False
+            for i in range(0, ship.size):
+                new_col = col + i
+                if board.map[row][new_col]:
+                    return False
+                ship_coords.append((row, new_col))
+
+        elif direction == 'vertical':
+            if row + ship.size > self.rows:
+                return False
+            for i in range(0, ship.size):
+                new_row = row + i
+                if board.map[new_row][col]:
+                    return False
+                ship_coords.append((new_row, col))
+
+        for x, y in ship_coords:
+            board.map[x][y] = ship
+
+        return True

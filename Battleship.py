@@ -175,6 +175,9 @@ def main() -> None:
         from PlayerAI_10 import BaselineAI
 
         playerAI = BaselineAI()
+    elif strategy == "csp":
+        from CSP.CSP_AI import CSPAI
+        playerAI = CSPAI()
     else:
         print(f"Unknown movement strategy given {strategy}")
         exit(1)
