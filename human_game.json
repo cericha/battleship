@@ -17,6 +17,7 @@
         "display": true,
         "show_enemy_board": false
     },
-    "strategy": "human"
+    "strategy": "human",
+    "times_to_run": 1
   }
   

@@ -55,6 +55,10 @@ In deciding how to search through a CSP we consider the following:
 
 Issue with the amount of global constraints that exist when we model the problem as each ship has 3 variables
 
-
+# Results
+Average metrics over 100 games:
+total_time_average: 9.667350461483002
+total_move_average: 42.69
+max_ram_usage_average: 12.871875
 
 

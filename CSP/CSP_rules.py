@@ -70,25 +70,29 @@ def sunk_adjust_assignment(sunk_coord, hunting, board, assignment_map):
         while count < size:
             hunting[0].remove((sx, sy-count))
             count += 1
+        val = (sx, sy-count+1, True)
         adjust_assignment(ship_id, (sx, sy-count+1, True), assignment_map)
     elif direction == 'DOWN':
         count = 1
         while count < size:
             hunting[0].remove((sx, sy+count))
             count += 1
+        val = (sx, sy, True)
         adjust_assignment(ship_id, (sx, sy, True), assignment_map)
     elif direction == 'LEFT':
         count = 1
         while count < size:
             hunting[0].remove((sx-count, sy))
             count += 1
-        adjust_assignment(ship_id, (sx, sy, False), assignment_map)
+        val = (sx, sy, False)
+        adjust_assignment(ship_id, val, assignment_map)
     elif direction == 'RIGHT':
         count = 1
         while count < size:
             hunting[0].remove((sx+count, sy))
             count += 1
-        adjust_assignment(ship_id, (sx+count-1, sy, False), assignment_map)
+        val = (sx+count-1, sy, False)
+        adjust_assignment(ship_id, val, assignment_map)
     while hunting != False and len(hunting[0]) == 0:
         hunting.pop(0)
         if len(hunting) == 0:
@@ -96,26 +100,25 @@ def sunk_adjust_assignment(sunk_coord, hunting, board, assignment_map):
     return hunting
     
 
-def miss_adjust_assignment(coord, assignment_map):
+def miss_adjust_assignment(miss_coord, assignment_map):
     """
     If we miss on some coord, any assignment that places the ship on that coord is invalid
     """
     # TODO: fix!! this isn't working right
-    x_miss, y_miss = coord
-    if x_miss <0 or y_miss < 0:
+    x_miss, y_miss = miss_coord
+    if x_miss < 0 or y_miss < 0:
         print("something went wrong!!")
         
     for ship in assignment_map.keys():
         size = int(ship[1])
-        
         to_be_removed = []
         for X,Y,V in assignment_map[ship]:
             ship_coords = get_full_ship_coords((X,Y,V), size)
-            if coord in ship_coords:
+            if miss_coord in ship_coords:
                 to_be_removed.append((X,Y,V))
         for item in to_be_removed:
             assignment_map[ship].remove(item)
-def hit_adjust_assignment( ship, hit_coords, assignment_map):
+def hit_adjust_assignment(ship, hit_coords, assignment_map):
     """
     if we know there's a hit, we can reduce the assignment based on intersections
     """
@@ -137,8 +140,4 @@ def hit_adjust_assignment( ship, hit_coords, assignment_map):
             to_be_removed.append((X,Y,V))
     for item in to_be_removed:
         assignment_map[ship].remove(item)
-    # 
-    # 
-    # for value in assignment_map[ship]:
-    #     show_ship(ship, value)
-    #     show_coords([(x,y,True) for x,y in hit_coords])
+    

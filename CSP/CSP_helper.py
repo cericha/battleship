@@ -25,6 +25,14 @@ def get_full_ship_coords(value, size):
         for i in range(size):
             hit_coords.append((x-i, y))
     return hit_coords
+def ship_has_empty_spaces(board, ship, assignment):
+    value = assignment.map[ship].pop()
+    assignment.map[ship] = [value]
+    size = int(ship[1])
+    for x, y in get_full_ship_coords(value, size):
+        if board.map[y][x] == Grid.SPACE['empty']:
+            return True
+    return False
 def get_direction_to_coord(from_coord, to_coord):
     direction = 'idkyet'
     fx, fy = from_coord
