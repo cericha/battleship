@@ -27,3 +27,13 @@ class Grid:
         gridCopy.map = deepcopy(self.map)
 
         return gridCopy
+
+    def get_result(self, player):
+        # Implement logic to determine the result of the game from this player's perspective
+        hits = 0
+        for row in range(len(self.map)):
+            for col in range(len(self.map[row])):
+                if self.map[row][col] == Grid.SPACE["hit"]:
+                    hits += 1
+
+        return 1 if hits == 17 else 0

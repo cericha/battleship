@@ -169,11 +169,25 @@ def main() -> None:
     if strategy == "human":
         from PlayerAI_10 import HumanPlayer
 
+        print("1")
+        exit(1)
         playerAI = HumanPlayer()
     elif strategy == "baseline":
         from PlayerAI_10 import BaselineAI
 
+        print("2")
+        exit(1)
         playerAI = BaselineAI()
+    elif strategy == "baselineSmarter":
+        from PlayerAI_10 import BaselineAISmarter
+
+        print("3")
+        exit(1)
+        playerAI = BaselineAISmarter()
+    elif strategy == "ISMCTS":
+        from PlayerAI_10 import ISMCTS
+
+        playerAI = ISMCTS(1000)
     else:
         print(f"Unknown movement strategy given {strategy}")
         exit(1)

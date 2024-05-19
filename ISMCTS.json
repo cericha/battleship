@@ -1,0 +1,22 @@
+{
+    "timer": {
+      "timeout": "inf"
+    },
+    "board": {
+      "rows": 10,
+      "columns": 10
+    },
+    "ships": [
+      {"size": 5, "name": "Carrier"},
+      {"size": 4, "name": "Battleshp"},
+      {"size": 3, "name": "Cruiser"},
+      {"size": 3, "name": "Submarine"},
+      {"size": 2, "name": "Destroyer"}
+    ],
+    "displayer": {
+        "display": true,
+        "show_enemy_board": false
+    },
+    "strategy": "ISMCTS"
+  }
+  
