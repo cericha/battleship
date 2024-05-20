@@ -12,7 +12,7 @@ class Grid_D:
     Remember, when accessing the arary, it is of form grid.map[y][x], NOT grid.map[x][y]
     """
 
-    SPACE = {"empty": 0, "miss": "X", "hit": 1, "potential_ship": 2}
+    SPACE = {"empty": 0, "miss": "X", "hit": 1, "potential_ship": 7}
 
     def __init__(self, rows: int = 10, cols: int = 10) -> None:
         self.rows = rows
@@ -23,7 +23,10 @@ class Grid_D:
         empty_spaces = []
         for y in range(self.rows):
             for x in range(self.cols):
-                if self.map[y][x] == self.SPACE["empty"]:
+                if (
+                    self.map[y][x] == self.SPACE["empty"]
+                    or self.map[y][x] == self.SPACE["potential_ship"]
+                ):
                     empty_spaces.append((x, y))
         return empty_spaces
 
@@ -50,7 +53,7 @@ class Grid_D:
         for i, row in enumerate(grid_d.map):
             for j, item in enumerate(row):
                 if isinstance(item, Ship):
-                    grid.map[i][j] = 1
+                    grid_d.map[i][j] = 1
 
         return grid_d
 
@@ -141,7 +144,7 @@ class ISMCTS(MoveStrategy):
         simulation_board = Grid_D.from_grid(board)
         new_board: Node = self.SO_ISMCTS(simulation_board, self.simulations)
         for row in new_board.state.map:
-            print(row)
+            print(row, "HELLO")
         return new_board.action
 
     def UCT_select_best_child(self, node, C=0.7):
@@ -167,7 +170,7 @@ class ISMCTS(MoveStrategy):
 
     def SELECT(self, v: Node, d: Grid_D):
 
-        while not self.is_terminal(v):  # Are ships hit == 17?
+        while not self.is_terminal(v.state):  # Are ships hit == 17?
 
             if v.is_fully_expanded():
                 v = self.UCT_select_best_child(v)
@@ -177,24 +180,30 @@ class ISMCTS(MoveStrategy):
                 break
         return v, d
 
-    def EXPAND(self, new_state: Node, new_determ: Grid_D):
+    def EXPAND(self, parent_state: Node, curr_determ: Grid_D):
         # Maybe I need to fix it here?
-        legal_moves = set(self.get_legal_moves(new_determ))
-        current_actions = set([child.action for child in new_state.children])
+        legal_moves = set(self.get_legal_moves(curr_determ))
+        current_actions = set([child.action for child in parent_state.children])
+        # current_possibles = []
+        # for i in range(10):
+        #     for j in range(10):
+        #         if curr_determ.map[i][j] == 7:
+        #             current_possibles.append((i, j))
+        # print(current_possibles - legal_moves)
+        untried_moves = legal_moves - current_actions  # set difference
 
-        legal_moves = legal_moves - current_actions  # set difference
+        # untried_moves = set(current_possibles) - current_actions
 
-        if not legal_moves:
-            return new_state, new_determ
+        if not untried_moves:
+            return parent_state, curr_determ
 
-        move_x, move_y = random.choice(list(legal_moves))
-        new_determ = deepcopy(new_determ)
+        # for row in curr_determ.map:
+        #     print(row)
 
-        new_determ = self.apply_action(new_determ, (move_x, move_y))
-
-        child_state = Node(new_determ, new_state, move=(move_x, move_y))
-        new_state.add_child(child_state)
-        child_state.parent = new_state
+        move = random.choice(list(untried_moves))
+        new_determ = self.apply_action(deepcopy(curr_determ), move)
+        child_state = Node(curr_determ, parent_state, move)
+        parent_state.add_child(child_state)
 
         return child_state, new_determ
 
@@ -205,24 +214,28 @@ class ISMCTS(MoveStrategy):
             cell == Grid_D.SPACE["hit"] for row in simulation_state.map for cell in row
         )
         while len(legal_moves) > 0 and total_hits < 17:
+            # I could choose better cells instead of uniformly random...
             move = random.choice(list(legal_moves))
             legal_moves.remove(move)
             x, y = move
             simulation_state = self.apply_action(simulation_state, move)
             if simulation_state.map[y][x] == Grid_D.SPACE["hit"]:
                 total_hits += 1
-        return 100 - len(legal_moves)
+        return len(legal_moves)
 
     def BACKPROPAGATE(self, r: float, v: Node):
         # This does not follow I think correctly Information Set MCTS backpropogate
-
+        count = 0
         while v is not None:
-            v.update(r)
+            count += 1
+            v.value += r
+            v.visits += 1
             v = v.parent
+        # print(count)
 
-    def SO_ISMCTS(self, current_board, n: int = 1000):
-
+    def SO_ISMCTS(self, current_board, n: int = 10000):
         root_node = Node(current_board, None, None)
+        n = 1000
         for _ in range(n):
             new_determinization = generate_valid_configuration(
                 current_board, self.ship_sizes, 1000
@@ -230,7 +243,7 @@ class ISMCTS(MoveStrategy):
             new_state, new_determ = self.SELECT(root_node, new_determinization)
             # if not self.is_terminal(new_state):
             #     new_state, new_determ = self.EXPAND(new_state, new_determ)
-            if not self.is_terminal(new_determ):
+            if not self.is_terminal(new_state.state):
                 new_state, new_determ = self.EXPAND(new_state, new_determ)
 
             reward = self.SIMULATE(new_determ)
@@ -241,6 +254,8 @@ class ISMCTS(MoveStrategy):
             print("END")
             exit(1)
         print(len(root_node.children))
+        print(max(root_node.children, key=lambda c: c.visits).value)
+        print("AAAAAAA")
         return max(root_node.children, key=lambda c: c.visits)
 
     def get_legal_moves(self, state: Grid_D):
@@ -374,7 +389,7 @@ def generate_random_determinization(state: Grid_D, ship_sizes: list) -> Grid_D:
                     if matches_hits(config, state)
                 ]
                 if not matching_configurations:
-                    print("ERROR")
+                    print("ERROR 2")
                     exit(1)
                     return None
                 return random.choice(matching_configurations)
@@ -397,7 +412,7 @@ def generate_valid_configuration(
             config for config in valid_configurations if matches_hits(config, state)
         ]
         if not matching_configurations:
-            print("ERROR")
+            print("ERROR 1")
             exit(1)
             return None
         return random.choice(matching_configurations)

@@ -72,7 +72,7 @@ class GameManager:
 
     def make_move(self, x: int, y: int) -> str:
         if self.grid.map[y][x] != Grid.SPACE["empty"]:
-            print("ERROR")
+            print("ERROR 3", str((y, x)), str(self.grid.map[y][x]))
             return "ERROR"
         else:
             # Enemy board will contain information about miss or hit
