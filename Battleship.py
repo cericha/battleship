@@ -187,7 +187,7 @@ def main() -> None:
     elif strategy == "ISMCTS":
         from PlayerAI_10 import ISMCTS
 
-        playerAI = ISMCTS(1000)
+        playerAI = ISMCTS(100)
     else:
         print(f"Unknown movement strategy given {strategy}")
         exit(1)

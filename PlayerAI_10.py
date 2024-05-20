@@ -4,7 +4,7 @@ from Grid_10 import Grid
 import math
 from copy import deepcopy
 from itertools import product
-from Ship_10 import Direction
+from Ship_10 import Direction, Ship
 
 
 class Grid_D:
@@ -47,6 +47,11 @@ class Grid_D:
     def from_grid(cls, grid: Grid) -> "Grid_D":
         grid_d = cls(grid.rows, grid.cols)
         grid_d.map = deepcopy(grid.map)
+        for i, row in enumerate(grid_d.map):
+            for j, item in enumerate(row):
+                if isinstance(item, Ship):
+                    grid.map[i][j] = 1
+
         return grid_d
 
 
@@ -109,9 +114,7 @@ class Node:
     def __init__(self, state: Grid_D, parent: "Node", move: Tuple[int, int]):
         self.state = state
         self.parent = parent
-        self.move = move
         self.children = []
-        self.wins = 0
         self.visits = 0
         self.value = 0
         self.action = move
@@ -121,7 +124,7 @@ class Node:
 
     def is_fully_expanded(self):
         all_legal_moves = self.state.getEmptySpaces()
-        return len(self.children) == len(all_legal_moves)
+        return len(all_legal_moves) == 0
 
     def update(self, value):
         self.value += value
@@ -136,8 +139,7 @@ class ISMCTS(MoveStrategy):
 
     def get_move(self, board: Grid_D):
         simulation_board = Grid_D.from_grid(board)
-        simulation_board = deepcopy(board)
-        new_board = self.SO_ISMCTS(simulation_board, self.simulations)
+        new_board: Node = self.SO_ISMCTS(simulation_board, self.simulations)
         for row in new_board.state.map:
             print(row)
         return new_board.action
@@ -164,23 +166,31 @@ class ISMCTS(MoveStrategy):
         return random.choice(best_nodes)
 
     def SELECT(self, v: Node, d: Grid_D):
-        while not self.is_terminal(v):
+
+        while not self.is_terminal(v):  # Are ships hit == 17?
+
             if v.is_fully_expanded():
                 v = self.UCT_select_best_child(v)
-                d = self.apply_action(d, v.action)
+                d = deepcopy(v.state)
+                # d = self.apply_action(deepcopy(d), v.action)
             else:
                 break
         return v, d
 
     def EXPAND(self, new_state: Node, new_determ: Grid_D):
-        legal_moves = self.get_legal_moves(new_determ)
+        # Maybe I need to fix it here?
+        legal_moves = set(self.get_legal_moves(new_determ))
+        current_actions = set([child.action for child in new_state.children])
+
+        legal_moves = legal_moves - current_actions  # set difference
+
+        if not legal_moves:
+            return new_state, new_determ
+
         move_x, move_y = random.choice(list(legal_moves))
         new_determ = deepcopy(new_determ)
 
-        if new_determ.map[move_y][move_x] == Grid_D.SPACE["potential_ship"]:
-            new_determ.map[move_y][move_x] = Grid_D.SPACE["hit"]
-        else:
-            new_determ.map[move_y][move_x] = Grid_D.SPACE["miss"]
+        new_determ = self.apply_action(new_determ, (move_x, move_y))
 
         child_state = Node(new_determ, new_state, move=(move_x, move_y))
         new_state.add_child(child_state)
@@ -198,15 +208,14 @@ class ISMCTS(MoveStrategy):
             move = random.choice(list(legal_moves))
             legal_moves.remove(move)
             x, y = move
-            if simulation_state.map[y][x] == Grid_D.SPACE["empty"]:
-                simulation_state.map[y][x] = Grid_D.SPACE["miss"]
-            elif simulation_state.map[y][x] == Grid_D.SPACE["potential_ship"]:
-                simulation_state.map[y][x] = Grid_D.SPACE["hit"]
+            simulation_state = self.apply_action(simulation_state, move)
+            if simulation_state.map[y][x] == Grid_D.SPACE["hit"]:
                 total_hits += 1
-        return len(legal_moves) + 1
+        return 100 - len(legal_moves)
 
     def BACKPROPAGATE(self, r: float, v: Node):
         # This does not follow I think correctly Information Set MCTS backpropogate
+
         while v is not None:
             v.update(r)
             v = v.parent
@@ -219,14 +228,23 @@ class ISMCTS(MoveStrategy):
                 current_board, self.ship_sizes, 1000
             )
             new_state, new_determ = self.SELECT(root_node, new_determinization)
-            if not self.is_terminal(new_state):
+            # if not self.is_terminal(new_state):
+            #     new_state, new_determ = self.EXPAND(new_state, new_determ)
+            if not self.is_terminal(new_determ):
                 new_state, new_determ = self.EXPAND(new_state, new_determ)
+
             reward = self.SIMULATE(new_determ)
             self.BACKPROPAGATE(reward, new_state)
-
+        if len(root_node.children) == 0:
+            for row in root_node.state.map:
+                print(row)
+            print("END")
+            exit(1)
+        print(len(root_node.children))
         return max(root_node.children, key=lambda c: c.visits)
 
     def get_legal_moves(self, state: Grid_D):
+        # Get empty space that has our assumed ship on it?
         open_cells = state.getEmptySpaces()
         legal_moves = set(open_cells)
         return legal_moves
@@ -245,9 +263,14 @@ class ISMCTS(MoveStrategy):
 
     def is_terminal(self, state: Node):
         total_ship_segments = sum(self.ship_sizes)
-        hit_count = sum(
-            cell == Grid_D.SPACE["hit"] for row in state.state.map for cell in row
-        )
+        if isinstance(state, (Grid, Grid_D)):
+            hit_count = sum(
+                cell == Grid_D.SPACE["hit"] for row in state.map for cell in row
+            )
+        else:
+            hit_count = sum(
+                cell == Grid_D.SPACE["hit"] for row in state.state.map for cell in row
+            )
         return hit_count == total_ship_segments
 
 
@@ -305,7 +328,7 @@ def generate_all_configurations(grid, ship_sizes):
     return valid_configurations
 
 
-def matches_hits(grid, original_grid):
+def matches_hits(grid: Grid_D, original_grid: Grid_D):
     for y in range(grid.rows):
         for x in range(grid.cols):
             if (
