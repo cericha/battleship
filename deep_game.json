@@ -18,6 +18,6 @@
         "show_enemy_board": false
     },
     "strategy": "deep",
-    "replay": 50000
+    "times_to_run": 50000
   }
   
