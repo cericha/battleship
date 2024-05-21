@@ -1,0 +1,37 @@
+{
+    "timer": {
+        "timeout": "inf"
+    },
+    "board": {
+        "rows": 10,
+        "columns": 10
+    },
+    "ships": [
+        {
+            "size": 5,
+            "name": "Carrier"
+        },
+        {
+            "size": 4,
+            "name": "Battleship"
+        },
+        {
+            "size": 3,
+            "name": "Cruiser"
+        },
+        {
+            "size": 3,
+            "name": "Submarine"
+        },
+        {
+            "size": 2,
+            "name": "Destroyer"
+        }
+    ],
+    "displayer": {
+        "display": false,
+        "show_enemy_board": false
+    },
+    "strategy": "csp",
+    "times_to_run": 10
+}

@@ -5,6 +5,11 @@ import math
 from copy import deepcopy
 from itertools import product
 from Ship_10 import Direction, Ship
+from Ship_10 import Ship
+
+from collections import deque
+import random
+import math
 
 
 class Grid_D:
@@ -71,8 +76,10 @@ class MoveStrategy:
             return f"x:{x} y:{y} has not been fired on"
         elif board.map[y][x] == Grid.SPACE["miss"]:
             return "miss"
-        else:
+        elif board.map[y][x] == Grid.SPACE['hit']:
             return "hit"
+        else:
+            return "sunk"
 
     def get_move(self, move: str) -> Tuple[int, int]:
         """
@@ -84,6 +91,7 @@ class MoveStrategy:
 class HumanPlayer(MoveStrategy):
 
     def parse_move(self, move: str) -> Tuple[int, int]:
+        # No sanitation here, easy for invalid input to fail out the function
         return tuple(map(int, str(move).split(" ")))
 
     def get_move(self, board: Grid):
