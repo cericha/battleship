@@ -7,8 +7,10 @@ Some notable variables/configurations you may want to change:
 - display: whether or not we show the board
 - times_to_run: how many times we run the simulated game
 - cores_to_use: how many cores to be used for parallel simulation
+- Current number of iterations is set to 100 in Battleship.py
 
 After the games run, there will be average metrics printed to console and 3 metric graphs created
+
 
 # Objective
 
@@ -29,3 +31,5 @@ Information Set Monte Carlo Tree Search
 - Ignoring nodes which read the same "board" as other nodes have chosen, or having that be part of the calculation (if two nodes reach the same determinization from different steps, it's the same board state at that time)
 
 - Using other UCT / UCB1 algorithms, changing the weights, and seeing if the results improve
+
+- Smaller boards show better results, as large boards have very large information sets, and the depth of the tree is as a result smaller. 

@@ -157,6 +157,7 @@ class Node:
 
 
 class ISMCTS(MoveStrategy):
+    """SO_ISMCTS implementation"""
 
     def __init__(self, simulations: int = 100):
         super().__init__()
