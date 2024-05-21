@@ -33,5 +33,5 @@
         "show_enemy_board": false
     },
     "strategy": "csp",
-    "times_to_run": 100
+    "times_to_run": 1000
 }

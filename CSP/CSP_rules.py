@@ -1,3 +1,4 @@
+from typing import List
 from CSP.CSP_helper import *
 """
 This contains functions that adjust an assignment based off the rules:
@@ -5,7 +6,7 @@ This contains functions that adjust an assignment based off the rules:
 2. No ship can occupy a 'miss' space
 3. No ship can go outside the bounds of the grid
 """
-def out_of_bounds_adjust(var, assignment_map):
+def out_of_bounds_adjust(var: str, assignment_map: dict) -> None:
     size = int(var[1])
     to_be_removed = []
     for X,Y,V in assignment_map[var]:
@@ -17,7 +18,7 @@ def out_of_bounds_adjust(var, assignment_map):
         assignment_map[var].remove(item)
 
 
-def adjust_assignment( ship, value, assignment_map):
+def adjust_assignment(ship: str, value: Tuple[int,int,bool], assignment_map: dict) -> None:
     assignment_map[ship] = [value]
     size = int(ship[1])
     hit_ship_coords = get_full_ship_coords(value, size)
@@ -41,13 +42,13 @@ def adjust_assignment( ship, value, assignment_map):
     for other_ship in to_be_adjusted:
         
         adjust_assignment(other_ship, assignment_map[other_ship][0], assignment_map)
-def is_solved(assignment_map):
+def is_solved(assignment_map: dict) -> bool:
     for variable in assignment_map.keys():
         if len(assignment_map[variable]) != 1:
             return False
     return True
     
-def sunk_adjust_assignment(sunk_coord, hunting, board, assignment_map):
+def sunk_adjust_assignment(sunk_coord: Tuple[int,int], hunting: List[List[Tuple[int,int]]], board: Grid, assignment_map: dict) -> List[List[Tuple[int,int]]]:
     """
     If we've sunk a ship, travel in the opposite direction that was used for hunting until we've marked all hits.
     Edge case if we accidentally sink a ship that was not originally hit
@@ -100,7 +101,7 @@ def sunk_adjust_assignment(sunk_coord, hunting, board, assignment_map):
     return hunting
     
 
-def miss_adjust_assignment(miss_coord, assignment_map):
+def miss_adjust_assignment(miss_coord: Tuple[int,int], assignment_map: dict) -> None:
     """
     If we miss on some coord, any assignment that places the ship on that coord is invalid
     """
@@ -118,7 +119,7 @@ def miss_adjust_assignment(miss_coord, assignment_map):
                 to_be_removed.append((X,Y,V))
         for item in to_be_removed:
             assignment_map[ship].remove(item)
-def hit_adjust_assignment(ship, hit_coords, assignment_map):
+def hit_adjust_assignment(ship: str, hit_coords: Tuple[int,int], assignment_map: dict) -> None:
     """
     if we know there's a hit, we can reduce the assignment based on intersections
     """

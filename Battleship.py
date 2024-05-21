@@ -1,10 +1,12 @@
 import json
+import multiprocessing
 import random
 import sys
 import time
 import resource
 from typing import List, Optional  # For below python 3.10 support
 
+from Graphs import make_statistics_graphs
 from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
@@ -53,7 +55,7 @@ class GameManager:
         start_time = time.time()
         individual_move_times = []
         # # Initialize the game
-        self.displayer.display(self.grid)
+        # self.displayer.display(self.grid)
         if self.enemyDisplay:
             self.displayer.display(self.enemy_board)
         moves = 0
@@ -62,7 +64,7 @@ class GameManager:
             gridCopy = self.grid.clone()  # To ensure AI cant steal this?
             moves += 1
             x, y = self.playerAI.get_move(gridCopy)
-            print(f"{' ' * 6}MOVES {moves}")
+            # print(f"{' ' * 6}MOVES {moves}")
             if moves > 150:
                 print("Something is awry.....")
                 self.displayer.display(self.enemy_board)
@@ -80,7 +82,7 @@ class GameManager:
         if self.over:
             print("Game Over - Ran out of time!")
         end_time = time.time()
-        print("Original Enemy Board:")
+        # print("Original Enemy Board:")
         self.displayer.display(self.enemy_board)
         return Metrics(self.enemy_board, end_time-start_time, individual_move_times, self.get_max_ram_usage())
 
@@ -156,6 +158,25 @@ class GameManager:
         usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         return usage / (1024 * 1024)
 
+# PARALLEL SIMULATION TESTING
+
+def run_simulation(strategy, allowed_time, standard_fleet, rows, columns, displayer, show_enemy_board):
+    timer = Timer(allowed_time)
+    playerAI = get_player_strategy(strategy)
+    gameManager = GameManager(
+        standard_fleet, rows, columns, playerAI, displayer, timer, show_enemy_board
+    )
+    # Start game
+    game_metrics = gameManager.start()
+    return game_metrics
+
+def run_simulations_in_parallel(strategy, allowed_time, standard_fleet, rows, columns, displayer, show_enemy_board, times_to_run, num_processes=None):
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        results = [pool.apply_async(run_simulation, (strategy, allowed_time, standard_fleet, rows, columns, displayer, show_enemy_board)) for _ in range(times_to_run)]
+        all_game_metrics = [result.get() for result in results]
+    return all_game_metrics
+
+# END PARALLEL SIMULATION TESTING
 
 
 def main() -> None:
@@ -187,20 +208,18 @@ def main() -> None:
     show_enemy_board = config["displayer"]["show_enemy_board"]
     times_to_run = config["times_to_run"]
 
-    playerAI = get_player_strategy(strategy)
+    # playerAI = get_player_strategy(strategy)
 
-    # Initialize game objects
     displayer = Displayer(displayer_on)
-    all_game_metrics = []
-    for i in range(times_to_run):
-        timer = Timer(allowed_time)
-        playerAI = get_player_strategy(strategy)
-        gameManager = GameManager(
-            standard_fleet, rows, columns, playerAI, displayer, timer, show_enemy_board
-        )
-        # Start game
-        game_metrics = gameManager.start()
-        all_game_metrics.append(game_metrics)
+    cores_to_use = 6
+    # Initialize game objects
+    start_time = time.time()
+    all_game_metrics = run_simulations_in_parallel(
+        strategy, allowed_time, standard_fleet, rows, columns,
+        displayer, show_enemy_board, times_to_run, num_processes=cores_to_use)
+    end_time = time.time()
+    print(f'Running {times_to_run} simulations took {str(end_time-start_time)} seconds to run using {cores_to_use} cores')
+
     total_time_average = 0
     total_move_average = 0
     max_ram_usage_average = 0
@@ -215,6 +234,7 @@ def main() -> None:
     print(f'total_time_average: {total_time_average}')
     print(f'total_move_average: {total_move_average}')
     print(f'max_ram_usage_average: {max_ram_usage_average}')
+    make_statistics_graphs(all_game_metrics)
 
 def get_player_strategy(strategy):
 
