@@ -22,6 +22,9 @@ class Grid:
                     empty_spaces.append((x, y))
         return empty_spaces
 
+    def __eq__(self, other) -> bool:
+        return self.map == other.map
+
     def clone(self) -> "Grid":
         gridCopy = Grid(self.rows, self.cols)
         gridCopy.map = deepcopy(self.map)
