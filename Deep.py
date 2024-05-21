@@ -33,8 +33,9 @@ def flatten_empty_list(arr):
 
 
 class DeepAI(MoveStrategy):
-
+    # This class holds the main code for the game logic
     def __init__(self):
+        # The init functions initializes the agent and all necessary game logic
         state_dim = 100
         action_dim = 100
         self.batch_size = 100
@@ -47,6 +48,7 @@ class DeepAI(MoveStrategy):
         self.writer = SummaryWriter()
 
     def get_move(self, board: Grid):
+        # Get Move is where the game polls the code for an action
         empty_spaces = board.getEmptySpaces()
         reward = 0
         if not empty_spaces:
@@ -101,6 +103,7 @@ class DeepAI(MoveStrategy):
 
 
 class DQN(nn.Module):
+    # This class represents the Deep Q Network itself, it needs to be used for the Agent
     def __init__(self, input_dim, output_dim):
         super(DQN, self).__init__()
         self.fc1 = nn.Linear(input_dim, 128)
@@ -115,6 +118,7 @@ class DQN(nn.Module):
 
 
 class Agent:
+    # This class holds the Agent itself that's used to approximate Q*
     def __init__(self, state_dim, action_dim, lr, gamma, epsilon, epsilon_decay, buffer_size):
         self.state_dim = state_dim
         self.action_dim = action_dim
@@ -127,6 +131,7 @@ class Agent:
         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
     def act(self, state, valid_actions):
+        # Act is the function that generated the action
         if np.random.rand() <= self.epsilon:
             return np.random.choice(valid_actions)
         q_values = self.model(T.tensor(state, dtype=T.float32))
@@ -134,9 +139,11 @@ class Agent:
         return valid_actions[T.argmax(valid_q_values).item()]
 
     def remember(self, state, action, reward, next_state, done):
+        # Remember adds an state to the memory
         self.memory.append((state, action, reward, next_state, done))
 
     def replay(self, batch_size):
+        # Replay memory stores games instances
         if len(self.memory) < batch_size:
             return
         minibatch = random.sample(self.memory, batch_size)
