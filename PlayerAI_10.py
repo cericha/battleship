@@ -194,7 +194,6 @@ class ISMCTS(MoveStrategy):
                 best_nodes.append(child)
 
         if len(best_nodes) == 0:
-            print("ERRRRRRR")
             return node
         return random.choice(best_nodes)
 
