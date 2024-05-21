@@ -1,0 +1,6 @@
+Images represent 1 iteration x 1000 simulations for a 4x4 board
+10 iterations x 1000 simulations for a 4x4 board
+100 iterations x 100 simulations for a 4x4 board
+
+Time spent simulating increases for number of iterations, but average time per 
+move does not change substantially.
