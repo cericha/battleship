@@ -11,7 +11,6 @@ from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
 from PlayerAI_10 import BaselineAI
-from PlayerAI_10 import DeepAI
 from Ship_10 import Ship, Direction
 from Timer_10 import Timer
 
@@ -243,21 +242,17 @@ def get_player_strategy(strategy):
     # Initialize movement strategy
     if strategy == "human":
         from PlayerAI_10 import HumanPlayer
-
         return HumanPlayer()
     elif strategy == "baseline":
         from PlayerAI_10 import BaselineAI
-
-
         return BaselineAI()
     elif strategy == "csp":
         from CSP.CSP_AI import CSPAI
         return CSPAI()
 
     elif strategy == "deep":
-        from PlayerAI_10 import DeepAI
-
-        playerAI = DeepAI()
+        from Deep import DeepAI
+        return DeepAI()
     else:
         print(f"Unknown movement strategy given {strategy}")
         exit(1)
