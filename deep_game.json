@@ -17,7 +17,7 @@
         "display": true,
         "show_enemy_board": false
     },
-    "strategy": "baseline",
-    "replay": 1
+    "strategy": "deep",
+    "replay": 50000
   }
   

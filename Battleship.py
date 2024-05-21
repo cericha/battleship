@@ -7,9 +7,9 @@ from Displayer_10 import Displayer
 from Grid_10 import Grid
 from Metrics_10 import Metrics
 from PlayerAI_10 import BaselineAI
+from PlayerAI_10 import DeepAI
 from Ship_10 import Ship, Direction
 from Timer_10 import Timer
-
 
 class GameManager:
     def __init__(
@@ -21,6 +21,7 @@ class GameManager:
         displayer: Optional[Displayer] = None,
         timer: Optional[Timer] = None,
         show_enemy_board: bool = True,
+        replay: int = 1,
     ) -> None:
         self.rows = rows
         self.cols = cols
@@ -29,15 +30,16 @@ class GameManager:
         self.playerAI = playerAI or BaselineAI
         self.displayer = displayer or Displayer()
         self.timer = timer or Timer()  # Default initialization is infinite time
+        self.replay = replay
 
-    def start(self) -> None:
+    def start(self) -> Metrics:
         self.grid = Grid(self.rows, self.cols)
         self.enemy_board = self.generate_random_board()
         self.total_hits = 0
         self.needed_hits = sum([ship.size for ship in self.ships])
         self.over = False
 
-        self.run_game()
+        return self.run_game()
 
     def run_game(self) -> Metrics:
         """
@@ -164,6 +166,7 @@ def main() -> None:
     columns = config["board"]["columns"]
     displayer_on = config["displayer"]["display"]
     show_enemy_board = config["displayer"]["show_enemy_board"]
+    replay = config["replay"]
 
     # Initialize movement strategy
     if strategy == "human":
@@ -174,6 +177,10 @@ def main() -> None:
         from PlayerAI_10 import BaselineAI
 
         playerAI = BaselineAI()
+    elif strategy == "deep":
+        from PlayerAI_10 import DeepAI
+
+        playerAI = DeepAI()
     else:
         print(f"Unknown movement strategy given {strategy}")
         exit(1)
@@ -182,12 +189,11 @@ def main() -> None:
     displayer = Displayer(displayer_on)
     timer = Timer(allowed_time)
     gameManager = GameManager(
-        standard_fleet, rows, columns, playerAI, displayer, timer, show_enemy_board
+        standard_fleet, rows, columns, playerAI, displayer, timer, show_enemy_board, replay
     )
-
     # Start game
-    gameManager.start()
-
+    for epoch in range(gameManager.replay):
+        metrics = gameManager.start()
 
 if __name__ == "__main__":
     main()
