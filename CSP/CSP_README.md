@@ -1,3 +1,15 @@
+# Running
+To run this program using the CSP solution, run:
+```
+python3 Battleship.py csp_game.json
+```
+Some notable variables/configurations you may want to change:
+- display: whether or not we show the board
+- times_to_run: how many times we run the simulated game
+- cores_to_use: how many cores to be used for parallel simulation
+
+After the games run, there will be average metrics printed to console and 3 metric graphs created
+
 # Objective
 Find the hidden board with the smallest amount of guesses. 
 
