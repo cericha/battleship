@@ -29,9 +29,9 @@
         }
     ],
     "displayer": {
-        "display": false,
+        "display": true,
         "show_enemy_board": false
     },
     "strategy": "csp",
-    "times_to_run": 10
+    "times_to_run": 7
 }

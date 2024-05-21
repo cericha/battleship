@@ -212,7 +212,7 @@ def main() -> None:
     # playerAI = get_player_strategy(strategy)
 
     displayer = Displayer(displayer_on)
-    cores_to_use = 6
+    cores_to_use = 1
     # Initialize game objects
     start_time = time.time()
     all_game_metrics = run_simulations_in_parallel(
