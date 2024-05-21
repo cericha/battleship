@@ -38,10 +38,6 @@ class GameManager:
     def start(self) -> Metrics:
         self.grid = Grid(self.rows, self.cols)
         self.enemy_board = self.generate_random_board()
-        # # TODO: remove/comment out testing code if not testing edge cases
-        # from CSP.CSP_tests import Testing
-        # self.enemy_board = Testing()
-        # self.enemy_board = self.enemy_board.edge_board2
         self.total_hits = 0
         self.needed_hits = sum([ship.size for ship in self.ships])
         self.over = False
