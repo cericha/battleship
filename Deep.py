@@ -5,6 +5,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+from Battleship import Ship, Grid
+from collections import deque
+from random import random
 
 def convert_grid_to_numeric(map):
     numeric_map = []
