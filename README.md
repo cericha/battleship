@@ -5,9 +5,9 @@ built as a group project for CSCI 76100 Artificial Intelligence, Hunter College,
 
 | Agent | Approach | Author |
 |---|---|---|
-| CSP | Constraint satisfaction over ship placements | @orionpal |
-| ISMCTS | Single-observer Information Set Monte Carlo Tree Search | @cericha |
-| DQN | Deep Q-Network (PyTorch) | @Sacredfuel |
+| CSP | Constraint satisfaction over ship placements | [Orion Palaquibay](https://github.com/orionpal) |
+| ISMCTS | Single-observer Information Set Monte Carlo Tree Search | [Charles Richards](https://github.com/cericha) |
+| DQN | Deep Q-Network (PyTorch) | [Ryan Vaz](https://github.com/Sacredfuel) |
 
 ## Running
 
